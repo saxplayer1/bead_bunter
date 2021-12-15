@@ -1,0 +1,65 @@
+.tableEntry {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    background-color: #282c34;
+    color: #ffffff;
+    border-left: solid 10px #008b7b;
+    border-bottom-right-radius: 10px;
+    transition: 0.5s;
+}
+
+.tableEntry:hover {
+    transition: 0.5s;
+    background-color: #585858;;
+}
+
+.tableEntryColumn {
+    margin-left: 10px;
+    width: 170px;
+}
+
+.applicantsTable {
+    width: 700px;
+}
+
+.applicantsPage {
+    display: flex;
+}
+
+.applicantsForm {
+    margin-top: 20px;
+    margin-bottom: auto;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    column-gap: 20px;
+    width: 400px;
+}
+
+.applicantsButton {
+    background-color: #282c34;
+    color: #ffffff;
+    border-radius: 4px;
+    height: 30px;
+}
+
+.applicantsInput {
+    display: flex;
+    justify-content: space-between;
+}
+
+.applicantsFormInputs {
+    background-color: #ffffff;
+}
+
+.jobsTableEntry {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    background-color: #282c34;
+    color: #ffffff;
+    border-left: solid 10px darkred;
+    border-bottom-right-radius: 10px;
+    transition: 0.5s;
+}
