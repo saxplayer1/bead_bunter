@@ -6,13 +6,13 @@ export default function Header() {
     return(
         <div className={"header"}>
             <ul className={"header-list"}>
-                <li>
-                    <div className={"link-box"}>
-                        <Link to={"/"} className={"header-item"}>
-                            HOME
-                        </Link>
-                    </div>
-                </li>
+                {/*<li>*/}
+                {/*    <div className={"link-box"}>*/}
+                {/*        <Link to={"/"} className={"header-item"}>*/}
+                {/*            HOME*/}
+                {/*        </Link>*/}
+                {/*    </div>*/}
+                {/*</li>*/}
                 <li>
                     <div className={"link-box"}>
                         <Link to={"/jobs"}  className={"header-item"}>

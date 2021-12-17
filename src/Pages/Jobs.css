@@ -9,7 +9,7 @@
     transition: 0.5s;
 }
 
-.tableEntry:hover {
+.jobsTableEntry:hover {
     transition: 0.5s;
     background-color: #585858;;
 }

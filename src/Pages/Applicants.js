@@ -1,22 +1,50 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./Applicants.css"
 
 export default function Applicants() {
+    const [passport, setPassport] = useState(null);
+    const [name, setName] = useState("")
+    const [surname, setSurname] = useState("")
+    const [email, setEmail] = useState("")
+    const [phone, setPhone] = useState("")
+    const [loading, setLoading] = useState(true);
+    const [applicants, setApplicants] = useState([]);
+    const [submit, setSubmit] = useState("create")
+    const [jobs, setJobs] = useState([]);
+    const [specs, setSpecs] = useState(new Map());
+    const [tableVisible, setTableVisible] = useState(false);
+
     function addRow() {
         let table = document.getElementById("exp_table");
 
-        let rowCount = table.rows.length;
-        let row = table.insertRow(rowCount);
+        if (table.rows[table.rows.length - 1].cells[0].firstChild.value
+            && table.rows[table.rows.length - 1].cells[1].firstChild.value) {
+            let rowCount = table.rows.length;
+            let row = table.insertRow(rowCount);
 
-        let cell1 = row.insertCell(0);
-        let element1 = document.createElement("input");
-        element1.type = "text";
-        cell1.appendChild(element1)
+            let cell1 = row.insertCell(0);
+            let element1 = document.createElement("input");
+            element1.type = "text";
+            cell1.appendChild(element1)
 
-        let cell2 = row.insertCell(1);
-        let element2 = document.createElement("input");
-        element2.type = "number";
-        cell2.appendChild(element2)
+            let cell2 = row.insertCell(1);
+            let element2 = document.createElement("input");
+            element2.type = "number";
+            cell2.appendChild(element2)
+        }
+    }
+
+    function removeRow() {
+        let table = document.getElementById("exp_table");
+        table.deleteRow(table.rows.length - 2)
+    }
+
+    function clearTable() {
+        let table = document.getElementById("exp_table")
+        console.log(table.rows)
+        for (let i = 0; i < table.rows.length - 2; i++) {
+            removeRow();
+        }
     }
 
     async function createApplicant() {
@@ -50,16 +78,16 @@ export default function Applicants() {
         let specs = "";
         let years = "";
         for (let r = 0; r < specsTable.rows.length; r++) {
-            specs += specsTable.rows[r].cells[0] + ",";
-            years += specsTable.rows[r].cells[1] + ",";
+            specs += specsTable.rows[r].cells[0].firstChild.value + ",";
+            years += specsTable.rows[r].cells[1].firstChild.value + ",";
         }
-        if (passport && passport.length === 10) {
-            spec_url += "?specs=" + specs + "&years=" + years + "&passport=" + passport;
-        }
+        console.log("string built")
+        spec_url += "?specs=" + specs + "&years=" + years + "&passport=" + passport;
         await fetch(spec_url, {method: "POST"})
     }
 
     async function alterApplicant() {
+        console.log("altering")
         if (!passport || passport.length !== 10) {
             alert("please enter valid passport number")
             return;
@@ -89,17 +117,13 @@ export default function Applicants() {
         let specsTable = document.getElementById("exp_table")
         let specs = "";
         let years = "";
-        for (let r = 0; r < specsTable.rows.length; r++) {
-            console.log(specsTable.rows[r].cells[0])
-            console.log(specsTable.rows[r].cells[1])
-            // specs += specsTable.rows[r].cells[0] + ",";
-            // years += specsTable.rows[r].cells[1] + ",";
+        for (let r = 1; r < specsTable.rows.length; r++) {
+            specs += specsTable.rows[r].cells[0].firstChild.value + ",";
+            years += specsTable.rows[r].cells[1].firstChild.value + ",";
         }
-        if (passport && passport.length === 10) {
-            console.log("string built")
-            spec_url += "?specs=" + specs + "&years=" + years + "&passport=" + passport;
-            await fetch(spec_url, {method: "POST"})
-        }
+        console.log("string built")
+        spec_url += "?specs=" + specs + "&years=" + years + "&passport=" + passport;
+        await fetch(spec_url, {method: "POST"}).catch(e => console.log(e))
     }
 
     function deleteApplicant() {
@@ -111,6 +135,8 @@ export default function Applicants() {
                 setLoading(false)
             })
             .catch(error => console.log('error', error));
+        fetch("HTTP://localhost:8080/specs/delete?passport=" + passport, {method: "POST"})
+        clearForm();
     }
 
     function getJobs() {
@@ -136,17 +162,36 @@ export default function Applicants() {
         setEmail("")
         setPhone("")
         setSubmit("create")
+        setTableVisible(false);
     }
 
-    const [passport, setPassport] = useState(null);
-    const [name, setName] = useState("")
-    const [surname, setSurname] = useState("")
-    const [email, setEmail] = useState("")
-    const [phone, setPhone] = useState("")
-    const [loading, setLoading] = useState(true);
-    const [applicants, setApplicants] = useState([]);
-    const [submit, setSubmit] = useState("create")
-    const [jobs, setJobs] = useState([]);
+    function changeSpecs() {
+        setTableVisible(true);
+        specs.get(passport).map((spec, index) => {
+            const table = document.getElementById("exp_table");
+            table.rows[index + 1].cells[0].firstChild.value = spec.position;
+            table.rows[index + 1].cells[1].firstChild.value = spec.years_exp;
+            addRow();
+        })
+    }
+
+    // function getSpecs() {
+    //     fetch("HTTP://localhost:8080/specs?passport=" + passport)
+    //         .then(response => response.json())
+    //         .then(async result => {
+    //             setSpecs(result.values)
+    //         })
+    //         .catch(error => console.log('error', error));
+    //
+    //     specs.map((spec, index) => {
+    //         addRow();
+    //         const table = document.getElementById("exp_table");
+    //         table.rows[index + 1].cells[0].firstChild.value = spec.position;
+    //         table.rows[index + 1].cells[1].firstChild.value = spec.years_exp;
+    //     })
+    //
+    //     console.log(specs)
+    // }
     if (loading) {
         fetch("HTTP://localhost:8080/applicants",)
             .then(response => response.text())
@@ -155,6 +200,20 @@ export default function Applicants() {
                 setLoading(false)
             })
             .catch(error => console.log('error', error));
+
+        fetch("HTTP://localhost:8080/specs/all")
+            .then(response => response.json())
+            .then(result => result.values)
+            .then(data => {
+                let specMap = new Map()
+                data.map((spec) => {
+                    if (!specMap.get(spec.passport_number)) {
+                        specMap.set(spec.passport_number, []);
+                    }
+                    specMap.get(spec.passport_number).push(spec);
+                })
+                setSpecs(specMap)
+            })
     }
     return (
         <div className={"applicantsPage"}>
@@ -162,20 +221,20 @@ export default function Applicants() {
 
                 <div>
                     <table className={"applicantsTable"}>
-                        {applicants.map((applicant) => {
+                        {applicants.map((applicant, index) => {
                             return (
-                                <tr onClick={() => {
-                                    console.log(applicant.passport_number)
-                                    setPassport(applicant.passport_number)
-                                    setName(applicant.name)
-                                    setSurname(applicant.surname)
-                                    setEmail(applicant.email)
-                                    setPhone(applicant.phone_number)
+                                <tr onClick={async () => {
+                                    setLoading(true)
+                                    setPassport(applicants[index].passport_number)
+                                    setName(applicants[index].name)
+                                    setSurname(applicants[index].surname)
+                                    setEmail(applicants[index].email)
+                                    setPhone(applicants[index].phone_number)
                                     setSubmit("alter")
-                                    setJobs([])
+                                    setLoading(false)
                                 }
                                 }>
-                                    <div className={"tableEntry"}>
+                                    <div className={"applicantsTableEntry"}>
                                         <div className={"tableEntryColumn"}>
                                             <h2>
                                                 {applicant.name} {applicant.surname}
@@ -192,7 +251,7 @@ export default function Applicants() {
                                                 Phone Number:
                                             </h2>
                                             <p>
-                                                {applicant.phone_number}
+                                                +7 {applicant.phone_number}
                                             </p>
                                         </div>
                                     </div>
@@ -268,7 +327,7 @@ export default function Applicants() {
                                minLength={10}/>
                     </label>
                     <label className={"applicantsInput"}>
-                        Телефон:
+                        Телефон (последние 10 цифр):
                         <input type={"text"}
                                value={phone}
                                onChange={e => setPhone(e.target.value)}
@@ -282,31 +341,33 @@ export default function Applicants() {
                                onChange={e => setEmail(e.target.value)}/>
                     </label>
                 </div>
-                <div>
-                    <table id={"exp_table"}>
-                        <tr>
-                            <td>
-                                Позиция
-                            </td>
-                            <td>
-                                Опыт (полных лет)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type={"text"}/>
-                            </td>
-                            <td>
-                                <input type={"number"}/>
-                            </td>
-                        </tr>
-                    </table>
-                    <input type={"button"} onClick={addRow} value={"+"}/>
-                </div>
+                    <div style={{display: tableVisible ? '' : 'none' }}>
+                        <table id={"exp_table"}>
+                            <tr>
+                                <td>
+                                    Позиция
+                                </td>
+                                <td>
+                                    Опыт (полных лет)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type={"text"}/>
+                                </td>
+                                <td>
+                                    <input type={"number"}/>
+                                </td>
+                            </tr>
+                        </table>
+                        <input type={"button"} onClick={addRow} value={"+"}/>
+                    </div>
+
                 <input type="button" value={"clear"} className={"applicantsButton"} onClick={clearForm}/>
                 <input type="submit" value={submit} className={"applicantsButton"}/>
                 <input type="button" value={"Get Jobs For Applicant"} className={"applicantsButton"} onClick={getJobs}/>
-                <input type="button" value={"delete user"} className={"applicantsButton"} onClick={deleteApplicant}/>
+                <input type="button" value={"Edit specializations"} className={"applicantsButton"} onClick={changeSpecs}/>
+                <input type="button" value={"delete user"} className={"deleteButton"} onClick={deleteApplicant}/>
             </form>
         </div>
     )

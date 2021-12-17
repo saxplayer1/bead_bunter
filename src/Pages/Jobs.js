@@ -5,19 +5,53 @@ import "./Jobs.css"
 export default function Jobs() {
 
     async function createJob() {
-        const url = "http://localhost:8080/jobs?position=" + position
-            + "&req_exp=" + exp
-            + "&salary=" + salary
-            + "&company_name=" + company;
-        const response = await fetch(url, {method: "POST"})
+        if (exp > 80) {
+            alert("nobody works that long");
+            return;
+        }
+        if (companies.indexOf(company) === -1) {
+            alert("This company is not registered")
+        } else {
+            const url = "http://localhost:8080/jobs?position=" + position
+                + "&req_exp=" + exp
+                + "&salary=" + salary
+                + "&company_name=" + company;
+            const response = await fetch(url, {method: "POST"})
+        }
     }
     async function alterJob() {
-        const url = "http://localhost:8080/jobs/alter?position=" + position
-            + "&req_exp=" + exp
-            + "&salary=" + salary
-            + "&company_name=" + company
-            + "&id=" + jobId;
-        const response = await fetch(url, {method: "POST"})
+
+        if (exp > 80) {
+            alert("nobody works that long");
+            return;
+        }
+        if (companies.indexOf(company) === -1) {
+            alert("This company is not registered")
+        } else {
+            const url = "http://localhost:8080/jobs/alter?position=" + position
+                + "&req_exp=" + exp
+                + "&salary=" + salary
+                + "&company_name=" + company
+                + "&id=" + jobId;
+            const response = await fetch(url, {method: "POST"})
+        }
+    }
+
+    async function deleteJob() {
+        fetch("http://localhost:8080/jobs/delete?id=" + jobId, {method: "POST"})
+        clearForm();
+        let compTemp = [];
+        fetch("HTTP://localhost:8080/jobs", )
+            .then(response => response.text())
+            .then(result => {setJobs(JSON.parse(result).values);})
+            .catch(error => console.log('error', error));
+
+        fetch("HTTP://localhost:8080/employers/names", )
+            .then(response => response.text())
+            .then(result => {JSON.parse(result).values.map((company) => {
+                compTemp.push(company.company_name)
+            }); setCompanies(compTemp); setLoading(false)})
+            .catch(error => console.log('error', error));
     }
     function handleSubmit() {
         submit === "create" ?
@@ -38,13 +72,22 @@ export default function Jobs() {
     const[position, setPosition] = useState("");
     const[exp, setExp] = useState();
     const[salary, setSalary] = useState();
-    const[company, setCompany] = useState("")
+    const[company, setCompany] = useState("");
     const[jobId, setJobId] = useState(1);
-    const[submit, setSubmit] = useState("create")
+    const[submit, setSubmit] = useState("create");
+    const[companies, setCompanies] = useState([]);
     if (loading) {
+        let compTemp = [];
         fetch("HTTP://localhost:8080/jobs", )
             .then(response => response.text())
-            .then(result => {setJobs(JSON.parse(result).values); setLoading(false)})
+            .then(result => {setJobs(JSON.parse(result).values);})
+            .catch(error => console.log('error', error));
+
+        fetch("HTTP://localhost:8080/employers/names", )
+            .then(response => response.text())
+            .then(result => {JSON.parse(result).values.map((company) => {
+                compTemp.push(company.company_name)
+            }); setCompanies(compTemp); setLoading(false)})
             .catch(error => console.log('error', error));
     }
 
@@ -122,6 +165,7 @@ export default function Jobs() {
                 </div>
                 <input type="button" value={"clear"} className={"jobsButton"} onClick={clearForm}/>
                 <input type="submit" value={submit} className={"jobsButton"}/>
+                <input type="button" value={"delete job"} className={"deleteButton"} onClick={deleteJob}/>
             </form>
         </div>
     )

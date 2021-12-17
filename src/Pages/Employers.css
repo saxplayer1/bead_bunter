@@ -1,0 +1,20 @@
+.employersTableEntry {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    background-color: #282c34;
+    color: #ffffff;
+    border-left: solid 10px #95801d;
+    border-bottom-right-radius: 10px;
+    transition: 0.5s;
+}
+
+
+.employersTableEntry:hover {
+    transition: 0.5s;
+    background-color: #585858;;
+}
+
+.employersPage {
+    display: flex;
+}
