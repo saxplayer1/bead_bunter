@@ -45,10 +45,6 @@ export default function Employers() {
             alert("please enter valid phone number")
             return;
         }
-        if (!website.match("^[\\w-\\.]+\\.)+[\\w-]{2,4}$")) {
-            alert("please enter valid website or don't enter at all")
-            return;
-        }
         const url = "http://localhost:8080/employers?company_name=" + name
             + "&address=" + address
             + "&phone_number=" + phone
